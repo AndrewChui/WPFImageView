@@ -6,31 +6,56 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.ComponentModel;
+using System.Drawing;
 
 namespace ImageViewer
 {
-    enum ShowMode
+    public enum ShowMode
     {
         Thumbnail,
         SingleWindow,
         SingleFull
     }
-    public class Images
+    public class Images : INotifyPropertyChanged
     {
         #region private var
         private List<string> fileNames;         //All files' path will be shown
         private List<BitmapImage> bitmapImages = new List<BitmapImage>(13);         //every page will be shown 13 images
-        private BitmapImage image;
-        private int currentIndex;
+        private Bitmap image;
         private int beginIndex;       //The first image's index was shown in current page
-        private int endIndex;          //endIndex-beginIndex+1=13
-        SearchOption searchOption = SearchOption.TopDirectoryOnly;
-        ShowMode showMode = ShowMode.Thumbnail;
+        private int endIndex;          //endIndex-beginIndex=13
+        private SearchOption searchOption = SearchOption.TopDirectoryOnly;
+        private ShowMode showMode = ShowMode.Thumbnail;
+        private bool start = false;
+        private int currentIndex;
         #endregion private var
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, e);
+        }
+        public int ThumbnailIndex { get; set; }
+        public Bitmap Image
+        {
+            get { return image; }
+            set { image = value; }
+        }
+        public ShowMode ShowMode
+        {
+            get { return showMode; }
+            set { showMode = value; }
+        }
         public List<BitmapImage> BitmapImages
         {
             get { return bitmapImages; }
-            set { bitmapImages = value; }
+            set
+            {
+                bitmapImages = value;
+                //OnPropertyChanged(new PropertyChangedEventArgs("BitmapImages"));
+            }
         }
         public string ImagePath { get; set; }
         public Images(string imagePath)
@@ -51,7 +76,7 @@ namespace ImageViewer
             fileNames = new List<string>(files);
         }
 
-        void LoadThumbnail()
+       public void LoadThumbnail()
         {
             bitmapImages.Clear();
             for (int i = beginIndex; i < endIndex; i++)
@@ -63,7 +88,46 @@ namespace ImageViewer
                 img.EndInit();
                 bitmapImages.Add(img);
             }
+            OnPropertyChanged(new PropertyChangedEventArgs("BitmapImages"));
+            start = true;
         }
-
+        public void LoadNextThumbnail()
+        {
+            if (!start)
+                return;
+            if (endIndex+13<=fileNames.Count)
+            {
+                endIndex += 13;
+                beginIndex += 13;
+            }
+            else
+            {
+                endIndex = fileNames.Count;
+                beginIndex = endIndex - 13;
+            }
+            LoadThumbnail();
+        }
+        public void LoadPreThumbnail()
+        {
+            if (!start)
+                return;
+            if (beginIndex-13>=0)
+            {
+                beginIndex -= 13;
+                endIndex -= 13;
+            }
+            else
+            {
+                beginIndex = 0;
+                endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
+            }
+            LoadThumbnail();
+        }
+        public void InitSingleImage()
+        {
+            currentIndex = beginIndex + ThumbnailIndex;
+            //var uri = bitmapImages[ThumbnailIndex].UriSource;
+            Image = new Bitmap(fileNames[currentIndex]);
+        }
     }
 }

@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageViewer"
         mc:Ignorable="d"
-       Title="MainWindow" Height="950" Width="1200" Background="Black">
-    <Grid Margin="15" Background="Black">
+       Title="MainWindow" Height="950" Width="1200" Background="Black" KeyDown="Window_KeyDown">
+    <Grid  Name="gridThumbnail" Margin="15" Background="Black" MouseWheel="gridThumbnail_MouseWheel" >
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Open" Click="MenuItem_Click"></MenuItem>
+                <MenuItem Header="Close" Click="MenuItem_Click_1"></MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
@@ -19,6 +25,44 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Image  Name="image01" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="5" Stretch="UniformToFill"></Image>
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="5" BorderThickness="2" BorderBrush="Black">
+            <Image  Name="image01"   Stretch="Uniform" Source="{Binding Path=BitmapImages[0]}" Margin="3" Tag="0" MouseLeftButtonDown="image01_MouseLeftButtonDown"></Image>
+        </Border>
+        <Border Grid.Row="0" Grid.Column="2" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image02"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[1]}" Tag="1"></Image>
+        </Border>
+        <Border Grid.Row="0" Grid.Column="3" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image03"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[2]}" Tag="2"></Image>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image04"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[3]}" Tag="3"></Image>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="3" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image05"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[4]}" Tag="4"></Image>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="0" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image06"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[5]}" Tag="5"></Image>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="1" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image07"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[6]}" Tag="6"></Image>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="2" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image08"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[7]}" Tag="7"></Image>
+        </Border>
+        <Border Grid.Row="2" Grid.Column="3" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image09"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[8]}" Tag="8"></Image>
+        </Border>
+        <Border Grid.Row="3" Grid.Column="0" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image10"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[9]}" Tag="9"></Image>
+        </Border>
+        <Border Grid.Row="3" Grid.Column="1" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image11"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[10]}" Tag="10"></Image>
+        </Border>
+        <Border Grid.Row="3" Grid.Column="2" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image12"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[11]}" Tag="11"></Image>
+        </Border>
+        <Border Grid.Row="3" Grid.Column="3" BorderBrush="White" BorderThickness="2" Margin="5">
+            <Image  Name="image13"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[12]}" Tag="12"></Image>
+        </Border>
     </Grid>
-</Window>
+   </Window>
