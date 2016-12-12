@@ -44,7 +44,7 @@ namespace ImageViewer
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                images = new ImageViewer.Images(fbd.SelectedPath);
+                images = new ImageViewer.Images(fbd.SelectedPath,ShowMode.Thumbnail);
                 images.LoadThumbnail();
                 gridThumbnail.DataContext = images;
             }
@@ -61,13 +61,11 @@ namespace ImageViewer
                 System.Windows.Application.Current.Shutdown();
 
         }
-
         private void image01_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             int index = Convert.ToInt32((sender as Image).Tag);
-            images.ThumbnailIndex = index;
-            var singleForm = new SingleForm(images);
+            var singleForm = new SingleForm(images, index);
             singleForm.Show();
-        }
+         }
     }
 }

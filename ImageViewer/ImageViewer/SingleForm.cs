@@ -18,42 +18,36 @@ namespace ImageViewer
         private bool mouseButtonDown;
         private Point lastMousePos;
         private Images images;
-        public SingleForm(Images imgs)
+        public SingleForm(Images imgs,int index)
         {
             InitializeComponent();
             images = imgs;
-            images.InitSingleImage();
-            currentImage = images.Image;
+            currentImage = images.InitSingleImage(index);
         }
 
         private void SingleForm_Load(object sender, EventArgs e)
         {
             //Size = Screen.PrimaryScreen.Bounds.Size;
             MouseWheel += SingleForm_MouseWheel;
-            loadFullImage();
+            LoadFullImage();
         }
         private void SingleForm_MouseWheel(object sender, MouseEventArgs e)
         {
-            if(e.Delta<0)
+            var img = e.Delta < 0 ? images.NextSingleImage() : images.PreSingleImage();
+            if(img!=null)
             {
-                images.NextSingleImage();
+                currentImage = img;
+                LoadFullImage();
             }
-            else
-            {
-                images.PreSingleImage();
-            }
-            currentImage = images.Image;
-            loadFullImage();
         }
         private void SingleForm_Paint(object sender, PaintEventArgs e)
         {
             if (currentImage != null)
                 e.Graphics.DrawImage(currentImage, formRect, imageRect, System.Drawing.GraphicsUnit.Pixel);
         }
-        private void loadFullImage()
+        private void LoadFullImage()
         {
             formRect = Util.CalcImageRegion(currentImage, Size);
-            //formRect.Offset(getWindowPos());
             imageRect = new Rectangle(Point.Empty, currentImage.Size);
             Invalidate();
         }
@@ -81,14 +75,16 @@ namespace ImageViewer
         private void SingleForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
+            {
                 Close();
+            }
         }
 
         private void SingleForm_MouseUp(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Left || e.Button==MouseButtons.Right) && currentImage != null)
             {
-                loadFullImage();
+                LoadFullImage();
                 mouseButtonDown = false;
             }
         }
@@ -97,8 +93,6 @@ namespace ImageViewer
         {
             if (mouseButtonDown && currentImage != null)
             {
-                //if (!mouseMoveCount) return;
-                //mouseMoveCount = false;
                 var deltX = (e.Location.X - lastMousePos.X) * 7;
                 var deltY = (e.Location.Y - lastMousePos.Y) * 7;
                 int imageX;
@@ -117,6 +111,10 @@ namespace ImageViewer
                 lastMousePos = e.Location;
             }
         }
-       
+
+        private void SingleForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            images.LoadThumbnail();
+        }
     }
 }

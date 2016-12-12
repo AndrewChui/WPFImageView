@@ -41,6 +41,7 @@
             this.Name = "SingleForm";
             this.Text = "SingleForm";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SingleForm_FormClosing);
             this.Load += new System.EventHandler(this.SingleForm_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.SingleForm_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SingleForm_KeyDown);

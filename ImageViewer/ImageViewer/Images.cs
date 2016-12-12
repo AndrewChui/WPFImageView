@@ -14,8 +14,7 @@ namespace ImageViewer
     public enum ShowMode
     {
         Thumbnail,
-        SingleWindow,
-        SingleFull
+        SingleWindow
     }
     public class Images : INotifyPropertyChanged
     {
@@ -67,14 +66,24 @@ namespace ImageViewer
                 ImagePath = imagePath;
                 GetImagesFileNames();
                 beginIndex = 0;
-                endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
                 currentIndex = 0;
             }
             if (showMode == ShowMode.SingleWindow)
             {
-
+                ImagePath = Path.GetDirectoryName(imagePath);
+                GetImagesFileNames();
+                for(int i=0;i<fileNames.Count;i++)
+                {
+                    if(imagePath==fileNames[i])
+                    {
+                        currentIndex = i;
+                        break;
+                    }
+                }
+                beginIndex = currentIndex - 6 > 0 ? currentIndex - 6 : 0;
             }
-
+            endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
+            this.showMode = showMode;
         }
         /// <summary>
         /// Construct
@@ -94,6 +103,12 @@ namespace ImageViewer
         public void LoadThumbnail()
         {
             bitmapImages.Clear();
+            if(showMode==ShowMode.SingleWindow)
+            {
+                beginIndex = currentIndex - 6 > 0 ? currentIndex - 6 : 0;
+                endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
+                showMode = ShowMode.Thumbnail;
+            }
             for (int i = beginIndex; i < endIndex; i++)
             {
                 var img = new BitmapImage();
@@ -138,9 +153,10 @@ namespace ImageViewer
             }
             LoadThumbnail();
         }
-        public Bitmap InitSingleImage()
+        public Bitmap InitSingleImage(int index)
         {
-            currentIndex = beginIndex +thumbnailIndex;
+            thumbnailIndex = index;
+            currentIndex = beginIndex +index;
             if(currentIndex>=0 && currentIndex<fileNames.Count)
             {
                 image = new Bitmap(fileNames[currentIndex]);
@@ -150,6 +166,7 @@ namespace ImageViewer
                 image = null;
                 currentIndex = 0;
             }
+            showMode = ShowMode.SingleWindow;
             return image;
         }
         public Bitmap NextSingleImage()
