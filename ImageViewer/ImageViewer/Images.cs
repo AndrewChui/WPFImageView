@@ -14,40 +14,35 @@ namespace ImageViewer
     public enum ShowMode
     {
         Thumbnail,
-        SingleWindow,
-        SingleFull
+        SingleWindow
     }
     public class Images : INotifyPropertyChanged
     {
         #region private var
         private List<string> fileNames;         //All files' path will be shown
         private List<BitmapImage> bitmapImages = new List<BitmapImage>(13);         //every page will be shown 13 images
-        private Bitmap image;
+        private Bitmap image;         //Single mode, this image will be shown
         private int beginIndex;       //The first image's index was shown in current page
         private int endIndex;          //endIndex-beginIndex=13
         private SearchOption searchOption = SearchOption.TopDirectoryOnly;
-        private ShowMode showMode = ShowMode.Thumbnail;
-        private bool start = false;
-        private int currentIndex;
+        private ShowMode showMode;
+        private bool start = false;    //images have been loaded when start=true 
+        private int currentIndex;     // the index in List filenames of which image has been shown in the single windows
+        private int thumbnailIndex = 0; //the index in List bitmapImages of which image has been shown in the single windows
         #endregion private var
 
+        /// <summary>
+        /// Implementation INotifyPropertyChanged interface
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(PropertyChangedEventArgs e)
+        private void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, e);
+            PropertyChanged?.Invoke(this, e);
         }
-        public int ThumbnailIndex { get; set; }
-        public Bitmap Image
-        {
-            get { return image; }
-            set { image = value; }
-        }
-        public ShowMode ShowMode
-        {
-            get { return showMode; }
-            set { showMode = value; }
-        }
+        #region Property
+        /// <summary>
+        /// property binding to thumbnail windows
+        /// </summary>
         public List<BitmapImage> BitmapImages
         {
             get { return bitmapImages; }
@@ -57,19 +52,38 @@ namespace ImageViewer
                 //OnPropertyChanged(new PropertyChangedEventArgs("BitmapImages"));
             }
         }
-        public string ImagePath { get; set; }
-        public Images(string imagePath)
+        public string ImagePath { get; set; }    //path of images' folder
+        #endregion Property
+        #region Construct method
+        /// <summary>
+        /// Construct
+        /// </summary>
+        /// <param name="imagePath">path of images' folder</param>
+        public Images(string imagePath, ShowMode showMode)
         {
-            ImagePath = imagePath;
-            GetImagesFileNames();
-            beginIndex = 0;
-            endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
+            if(showMode==ShowMode.Thumbnail)
+            {
+                ImagePath = imagePath;
+                GetImagesFileNames();
+                beginIndex = 0;
+                endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
+                currentIndex = 0;
+            }
+            if(showMode==ShowMode.SingleWindow)
+            {
+
+            }
+            
         }
+        /// <summary>
+        /// Construct
+        /// </summary>
         public Images()
         {
             ImagePath = null;
             beginIndex = endIndex = currentIndex = 0;
         }
+        #endregion Method
         public void GetImagesFileNames()
         {
             var files = Directory.GetFiles(ImagePath, "*.jpg", searchOption);
