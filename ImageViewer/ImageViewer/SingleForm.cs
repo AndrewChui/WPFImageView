@@ -12,14 +12,11 @@ namespace ImageViewer
 {
     public partial class SingleForm : Form
     {
-        private int currentImageIndex;
         private Bitmap currentImage;
         private Rectangle formRect;
         private Rectangle imageRect;
-        private bool mouseLButtonDown;
+        private bool mouseButtonDown;
         private Point lastMousePos;
-        private bool mouseMoveCount;
-
         private Images images;
         public SingleForm(Images imgs)
         {
@@ -37,7 +34,16 @@ namespace ImageViewer
         }
         private void SingleForm_MouseWheel(object sender, MouseEventArgs e)
         {
-
+            if(e.Delta<0)
+            {
+                images.NextSingleImage();
+            }
+            else
+            {
+                images.PreSingleImage();
+            }
+            currentImage = images.Image;
+            loadFullImage();
         }
         private void SingleForm_Paint(object sender, PaintEventArgs e)
         {
@@ -51,22 +57,24 @@ namespace ImageViewer
             imageRect = new Rectangle(Point.Empty, currentImage.Size);
             Invalidate();
         }
-        private void releaseCurrentImage()
-        {
-            if (currentImage != null)
-                currentImage.Dispose();
-            currentImage = null;
-            currentImageIndex = 0;
-        }
 
         private void SingleForm_MouseDown(object sender, MouseEventArgs e)
         {
             if(e.Button==MouseButtons.Left && currentImage != null)
             {
-                mouseLButtonDown = true;
+                mouseButtonDown = true;
                 lastMousePos = e.Location;
                 Util.CalcShowRegion(currentImage, Size, e.Location, 1, ref formRect, out imageRect);
                 Invalidate();
+                return;
+            }
+            if (e.Button == MouseButtons.Right && currentImage != null)
+            {
+                mouseButtonDown = true;
+                lastMousePos = e.Location;
+                Util.CalcShowRegion(currentImage, Size, e.Location, 2, ref formRect, out imageRect);
+                Invalidate();
+                return;
             }
         }
 
@@ -78,16 +86,16 @@ namespace ImageViewer
 
         private void SingleForm_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && currentImage != null)
+            if ((e.Button == MouseButtons.Left || e.Button==MouseButtons.Right) && currentImage != null)
             {
                 loadFullImage();
-                mouseLButtonDown = false;
+                mouseButtonDown = false;
             }
         }
 
         private void SingleForm_MouseMove(object sender, MouseEventArgs e)
         {
-            if (mouseLButtonDown && currentImage != null)
+            if (mouseButtonDown && currentImage != null)
             {
                 //if (!mouseMoveCount) return;
                 //mouseMoveCount = false;

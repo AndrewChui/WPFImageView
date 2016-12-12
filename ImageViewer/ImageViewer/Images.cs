@@ -28,7 +28,7 @@ namespace ImageViewer
         private SearchOption searchOption = SearchOption.TopDirectoryOnly;
         private ShowMode showMode = ShowMode.Thumbnail;
         private bool start = false;
-        private int currentIndex;
+        private int currentIndex=0;
         #endregion private var
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -103,7 +103,7 @@ namespace ImageViewer
             else
             {
                 endIndex = fileNames.Count;
-                beginIndex = endIndex - 13;
+                beginIndex = endIndex - 13 > 0 ? endIndex - 13 : 0;
             }
             LoadThumbnail();
         }
@@ -126,8 +126,46 @@ namespace ImageViewer
         public void InitSingleImage()
         {
             currentIndex = beginIndex + ThumbnailIndex;
-            //var uri = bitmapImages[ThumbnailIndex].UriSource;
-            Image = new Bitmap(fileNames[currentIndex]);
+            if(currentIndex>=0 && currentIndex<fileNames.Count)
+            {
+                Image = new Bitmap(fileNames[currentIndex]);
+            }
+            else
+            {
+                Image = null;
+                currentIndex = 0;
+            }
+        }
+        public void NextSingleImage()
+        {
+            if(ThumbnailIndex<12)
+            {
+                ThumbnailIndex++;
+                currentIndex = beginIndex + ThumbnailIndex;
+                if (currentIndex >= 0 && currentIndex < fileNames.Count)
+                {
+                    image.Dispose();
+                    Image = new Bitmap(fileNames[currentIndex]);
+                }
+                else
+                {
+                    ThumbnailIndex--;
+                    currentIndex--;
+                }
+            }
+        }
+        public void PreSingleImage()
+        {
+            if (ThumbnailIndex > 0)
+            {
+                ThumbnailIndex--;
+                currentIndex = beginIndex + ThumbnailIndex;
+                if (currentIndex >= 0 && currentIndex < fileNames.Count)
+                {
+                    image.Dispose();
+                    Image = new Bitmap(fileNames[currentIndex]);
+                }
+            }
         }
     }
 }

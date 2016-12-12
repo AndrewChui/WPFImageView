@@ -65,9 +65,6 @@ namespace ImageViewer
         private void image01_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             int index = Convert.ToInt32((sender as Image).Tag);
-            //var singleWin = new ImageSingle(images);
-            //singleWin.Owner = this;
-            //singleWin.Show();
             images.ThumbnailIndex = index;
             var singleForm = new SingleForm(images);
             singleForm.Show();
