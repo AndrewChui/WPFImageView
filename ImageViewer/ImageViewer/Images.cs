@@ -8,6 +8,8 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using System.ComponentModel;
 using System.Drawing;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace ImageViewer
 {
@@ -20,7 +22,7 @@ namespace ImageViewer
     {
         #region private var
         private List<string> fileNames;         //All files' path will be shown
-        private List<BitmapImage> bitmapImages = new List<BitmapImage>(13);         //every page will be shown 13 images
+        private ObservableCollection<BitmapImage> bitmapImages = new ObservableCollection<BitmapImage>();         //every page will be shown 13 images
         private Bitmap image;         //Single mode, this image will be shown
         private int beginIndex;       //The first image's index was shown in current page
         private int endIndex;          //endIndex-beginIndex=13
@@ -29,6 +31,7 @@ namespace ImageViewer
         private bool start = false;    //images have been loaded when start=true 
         private int currentIndex;     // the index in List filenames of which image has been shown in the single windows
         private int thumbnailIndex = 0; //the index in List bitmapImages of which image has been shown in the single windows
+        private FileSystemWatcher fileWatcher;
         #endregion private var
 
         /// <summary>
@@ -43,13 +46,13 @@ namespace ImageViewer
         /// <summary>
         /// property binding to thumbnail windows
         /// </summary>
-        public List<BitmapImage> BitmapImages
+        public ObservableCollection<BitmapImage> BitmapImages
         {
             get { return bitmapImages; }
             set
             {
                 bitmapImages = value;
-                //OnPropertyChanged(new PropertyChangedEventArgs("BitmapImages"));
+                OnPropertyChanged(new PropertyChangedEventArgs("BitmapImages"));
             }
         }
         public string ImagePath { get; set; }    //path of images' folder
@@ -82,8 +85,39 @@ namespace ImageViewer
                 }
                 beginIndex = currentIndex - 6 > 0 ? currentIndex - 6 : 0;
             }
+            //watch filesystem changed
+            fileWatcher = new FileSystemWatcher(imagePath, "*.jpg");
+            fileWatcher.Created += new FileSystemEventHandler(OnCreate);
+            //fileWatcher.Deleted += new FileSystemEventHandler(OnDelete);
+            //fileWatcher.Renamed += new RenamedEventHandler(OnRenamed);
+            fileWatcher.EnableRaisingEvents = true;
+            fileWatcher.NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastAccess
+            | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size;
+            fileWatcher.IncludeSubdirectories = true;
             endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
             this.showMode = showMode;
+        }
+        //Watch Files changed
+        private void OnCreate(object sender,FileSystemEventArgs e)
+        {
+            fileNames.Add(e.FullPath);
+            if(endIndex-beginIndex<13)
+            {
+                endIndex++;
+                if (showMode == ShowMode.Thumbnail)
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                        var img = new BitmapImage();
+                        img.BeginInit();
+                        img.DecodePixelHeight = 300;
+                        img.UriSource = new Uri(fileNames[fileNames.Count - 1]);
+                        img.EndInit();
+                        bitmapImages.Add(img);
+                        LoadThumbnail();
+                    }));
+
+                }
+            }
         }
         /// <summary>
         /// Construct
@@ -118,39 +152,22 @@ namespace ImageViewer
                 img.EndInit();
                 bitmapImages.Add(img);
             }
-            OnPropertyChanged(new PropertyChangedEventArgs("BitmapImages"));
             start = true;
         }
         public void LoadNextThumbnail()
         {
-            if (!start)
+            if (!start || endIndex==fileNames.Count)
                 return;
-            if (endIndex + 13 <= fileNames.Count)
-            {
-                endIndex += 13;
-                beginIndex += 13;
-            }
-            else
-            {
-                endIndex = fileNames.Count;
-                beginIndex = endIndex - 13;
-            }
+            beginIndex = endIndex;
+            endIndex = endIndex + 13 <= fileNames.Count ? endIndex + 13 : fileNames.Count;
             LoadThumbnail();
         }
         public void LoadPreThumbnail()
         {
-            if (!start)
+            if (!start || beginIndex==0)
                 return;
-            if (beginIndex - 13 >= 0)
-            {
-                beginIndex -= 13;
-                endIndex -= 13;
-            }
-            else
-            {
-                beginIndex = 0;
-                endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
-            }
+            beginIndex = beginIndex - 13 >= 0 ? beginIndex - 13 : 0;
+            endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
             LoadThumbnail();
         }
         public Bitmap InitSingleImage(int index)
@@ -186,7 +203,7 @@ namespace ImageViewer
         {
             if (currentIndex > 0)
             {
-                image.Dispose();
+                image?.Dispose();
                 image = new Bitmap(fileNames[--currentIndex]);
             }
             else
