@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.ComponentModel;
@@ -30,7 +26,7 @@ namespace ImageViewer
         private ShowMode showMode;
         private bool start = false;    //images have been loaded when start=true 
         private int currentIndex;     // the index in List filenames of which image has been shown in the single windows
-        private int thumbnailIndex = 0; //the index in List bitmapImages of which image has been shown in the single windows
+        //private int thumbnailIndex = 0; //the index in List bitmapImages of which image has been shown in the single windows
         private FileSystemWatcher fileWatcher;
         #endregion private var
 
@@ -49,13 +45,13 @@ namespace ImageViewer
         public ObservableCollection<BitmapImage> BitmapImages
         {
             get { return bitmapImages; }
-            set
-            {
-                bitmapImages = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("BitmapImages"));
-            }
+            set { bitmapImages = value; }
         }
         public string ImagePath { get; set; }    //path of images' folder
+        public ShowMode ShowMode
+        {
+            get { return showMode; }
+        }
         #endregion Property
         #region Construct method
         /// <summary>
@@ -86,7 +82,7 @@ namespace ImageViewer
                 beginIndex = currentIndex - 6 > 0 ? currentIndex - 6 : 0;
             }
             //watch filesystem changed
-            fileWatcher = new FileSystemWatcher(imagePath, "*.jpg");
+            fileWatcher = new FileSystemWatcher(ImagePath, "*.jpg");
             fileWatcher.Created += new FileSystemEventHandler(OnCreate);
             //fileWatcher.Deleted += new FileSystemEventHandler(OnDelete);
             //fileWatcher.Renamed += new RenamedEventHandler(OnRenamed);
@@ -97,11 +93,25 @@ namespace ImageViewer
             endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
             this.showMode = showMode;
         }
-        //Watch Files changed
-        private void OnCreate(object sender,FileSystemEventArgs e)
+              
+        /// <summary>
+        /// Construct
+        /// </summary>
+        public Images()
+        {
+            ImagePath = null;
+            beginIndex = endIndex = currentIndex = 0;
+        }
+        #endregion Method
+        /// <summary>
+        /// Watch File System, add new files in list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCreate(object sender, FileSystemEventArgs e)
         {
             fileNames.Add(e.FullPath);
-            if(endIndex-beginIndex<13)
+            if (endIndex - beginIndex < 13)
             {
                 endIndex++;
                 if (showMode == ShowMode.Thumbnail)
@@ -113,21 +123,11 @@ namespace ImageViewer
                         img.UriSource = new Uri(fileNames[fileNames.Count - 1]);
                         img.EndInit();
                         bitmapImages.Add(img);
-                        LoadThumbnail();
                     }));
 
                 }
             }
         }
-        /// <summary>
-        /// Construct
-        /// </summary>
-        public Images()
-        {
-            ImagePath = null;
-            beginIndex = endIndex = currentIndex = 0;
-        }
-        #endregion Method
         public void GetImagesFileNames()
         {
             var files = Directory.GetFiles(ImagePath, "*.jpg", searchOption);
@@ -137,7 +137,7 @@ namespace ImageViewer
         public void LoadThumbnail()
         {
             bitmapImages.Clear();
-            if(showMode==ShowMode.SingleWindow)
+            if(showMode==ShowMode.SingleWindow && (currentIndex<beginIndex || currentIndex+1>endIndex))
             {
                 beginIndex = currentIndex - 6 > 0 ? currentIndex - 6 : 0;
                 endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
@@ -154,6 +154,7 @@ namespace ImageViewer
             }
             start = true;
         }
+       
         public void LoadNextThumbnail()
         {
             if (!start || endIndex==fileNames.Count)
@@ -172,7 +173,6 @@ namespace ImageViewer
         }
         public Bitmap InitSingleImage(int index)
         {
-            thumbnailIndex = index;
             currentIndex = beginIndex +index;
             if(currentIndex>=0 && currentIndex<fileNames.Count)
             {
@@ -184,6 +184,11 @@ namespace ImageViewer
                 currentIndex = 0;
             }
             showMode = ShowMode.SingleWindow;
+            return image;
+        }
+        public Bitmap InitSingleImage()
+        {
+            image = new Bitmap(fileNames[currentIndex]);
             return image;
         }
         public Bitmap NextSingleImage()

@@ -24,7 +24,12 @@ namespace ImageViewer
             images = imgs;
             currentImage = images.InitSingleImage(index);
         }
-
+        public SingleForm(Images imgs)
+        {
+            InitializeComponent();
+            images = imgs;
+            currentImage = images.InitSingleImage();
+        }
         private void SingleForm_Load(object sender, EventArgs e)
         {
             //Size = Screen.PrimaryScreen.Bounds.Size;

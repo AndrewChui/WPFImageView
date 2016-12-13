@@ -26,7 +26,11 @@ namespace ImageViewer
         {
             InitializeComponent();
         }
-
+        public MainWindow(string fileName)
+        {
+            InitializeComponent();
+            images = new Images(fileName, ShowMode.SingleWindow);
+        }
         private void gridThumbnail_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if(e.Delta<-2)
@@ -67,5 +71,16 @@ namespace ImageViewer
             var singleForm = new SingleForm(images, index);
             singleForm.Show();
          }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if(images!=null && images.ShowMode==ShowMode.SingleWindow)
+            {
+                images.LoadThumbnail();
+                gridThumbnail.DataContext = images;
+                var singleForm = new SingleForm(images);
+                singleForm.Show();
+            }
+        }
     }
 }
