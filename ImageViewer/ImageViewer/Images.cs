@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Threading.Tasks;
 
 namespace ImageViewer
 {
@@ -152,6 +153,16 @@ namespace ImageViewer
                 img.EndInit();
                 bitmapImages.Add(img);
             }
+            //Parallel.For(beginIndex, endIndex, i =>
+            //  {
+            //      var img = new BitmapImage();
+            //      img.BeginInit();
+            //      img.DecodePixelHeight = 300;
+            //      img.UriSource = new Uri(fileNames[i]);
+            //      img.EndInit();
+            //      img.Freeze();
+            //      bitmapImages.Add(img);
+            //  });
             start = true;
         }
        

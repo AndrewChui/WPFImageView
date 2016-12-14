@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageViewer"
         mc:Ignorable="d"
-       Title="MainWindow" Height="950" Width="1200" Background="Black" KeyDown="Window_KeyDown" Loaded="Window_Loaded">
+       Title="MainWindow" Height="950" Width="1200" Background="Black" KeyDown="Window_KeyDown" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
     <Grid  Name="gridThumbnail" Margin="15" Background="Black" MouseWheel="gridThumbnail_MouseWheel" >
         <Grid.ContextMenu>
             <ContextMenu>
