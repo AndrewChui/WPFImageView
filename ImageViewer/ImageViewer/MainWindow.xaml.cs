@@ -1,18 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Forms;
 namespace ImageViewer
 {
@@ -26,9 +15,8 @@ namespace ImageViewer
         {
             InitializeComponent();
         }
-        public MainWindow(string fileName)
+        public MainWindow(string fileName):this()
         {
-            InitializeComponent();
             images = new Images(fileName, ShowMode.SingleWindow);
         }
         private void gridThumbnail_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -48,9 +36,10 @@ namespace ImageViewer
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                images = new ImageViewer.Images(fbd.SelectedPath,ShowMode.Thumbnail);
+                images = new Images(fbd.SelectedPath,ShowMode.Thumbnail);
                 images.LoadThumbnail();
                 gridThumbnail.DataContext = images;
+                openCanvs.Visibility = Visibility.Hidden;
             }
         }
 
@@ -76,10 +65,10 @@ namespace ImageViewer
         {
             if(images!=null && images.ShowMode==ShowMode.SingleWindow)
             {
-                images.LoadThumbnail();
-                gridThumbnail.DataContext = images;
                 var singleForm = new SingleForm(images);
                 singleForm.Show();
+                images.LoadThumbnail();
+                gridThumbnail.DataContext = images;
             }
         }
     }

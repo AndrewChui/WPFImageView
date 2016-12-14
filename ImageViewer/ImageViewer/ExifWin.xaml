@@ -1,0 +1,15 @@
+﻿<Window x:Class="ImageViewer.ExifWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageViewer"
+        mc:Ignorable="d"
+        Title="ExifWin" Height="70.749" Width="483.704" 
+        HorizontalAlignment="Left" SizeToContent="WidthAndHeight" 
+        ShowInTaskbar="False" Opacity="0.4" Background="Black" 
+        WindowStyle="None" KeyDown="Window_KeyDown" WindowStartupLocation="CenterOwner">
+    <Grid Margin="0" Background="Black">
+        <Label Name="exifLabel" Margin="0" Background="Black" Foreground="White"></Label>
+    </Grid>
+</Window>

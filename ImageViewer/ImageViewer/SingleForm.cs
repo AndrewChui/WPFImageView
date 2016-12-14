@@ -83,6 +83,13 @@ namespace ImageViewer
             {
                 Close();
             }
+            if(e.KeyCode==Keys.F10)
+            {
+                var exifWin = new ExifWin();
+                exifWin.ExifInfo = Util.GetProperty(currentImage);
+                exifWin.SetLabe();
+                exifWin.Show();
+            }
         }
 
         private void SingleForm_MouseUp(object sender, MouseEventArgs e)
