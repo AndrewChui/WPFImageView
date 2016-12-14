@@ -10,24 +10,17 @@
     <Grid Name="gridThumbnail">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="49*"></RowDefinition>
-            <RowDefinition/>
+            <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="50"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="50"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Path=ImagePath}" Foreground="White"
-                   FontSize="18"></TextBlock>
-        <Grid Grid.Row="1" Grid.Column="1"  Background="Black" MouseWheel="gridThumbnail_MouseWheel" >
-            <Grid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Open" Click="MenuItem_Click"></MenuItem>
-                    <MenuItem Header="Close" Click="MenuItem_Click_1"></MenuItem>
-                </ContextMenu>
-            </Grid.ContextMenu>
+                   FontSize="18" Margin="20"></TextBlock>
+        <Grid Grid.Row="1" Grid.Column="1"  Background="Black">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -80,9 +73,55 @@
                 <Image  Name="image13"  Margin="3" Stretch="Uniform" Source="{Binding Path=BitmapImages[12]}" Tag="12" MouseLeftButtonDown="image01_MouseLeftButtonDown"></Image>
             </Border>
         </Grid>
-        <Canvas Name="openCanvs" Grid.Row="1" Grid.Column="1" Background="Black">
-            <Button Name="openButton" FontSize="48" Canvas.Left="600" Canvas.Top="600" Click="MenuItem_Click">
-                OpenFloder
+        
+        <Button Grid.Row="1" Grid.Column="0" x:Name="btnLeft" Click="btnLeft_Click" IsEnabled="{Binding Path=LeftPage}">  
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Image Name="btnbg" Source="/Images/左.png"></Image>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source" Value="/Images/左亮.png" TargetName="btnbg" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Source" Value="/Images/左灰.png" TargetName="btnbg" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Button Grid.Row="1" Grid.Column="2" x:Name="btnRight" Click="btnRight_Click" IsEnabled="{Binding Path=RightPage}">  
+             <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Image Name="btnbg" Source="/Images/右.png"></Image>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source" Value="/Images/右亮.png" TargetName="btnbg" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Source" Value="/Images/右灰.png" TargetName="btnbg" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Canvas Name="openCanvs" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="Black">
+            <Button Name="openButton" FontSize="24" Click="openButton_Click"  Width="110">
+                Open
+            </Button>
+            <Button Name="exitButton" FontSize="24" Click="exitButton_Click"  Width="110">
+                Exit
             </Button>
         </Canvas>
     </Grid>

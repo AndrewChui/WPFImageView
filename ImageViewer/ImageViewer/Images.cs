@@ -16,7 +16,7 @@ namespace ImageViewer
         Thumbnail,
         SingleWindow
     }
-    public class Images : INotifyPropertyChanged
+    public class Images : INotifyPropertyChanged, IDisposable
     {
         #region private var
         private List<string> fileNames;         //All files' path will be shown
@@ -30,6 +30,8 @@ namespace ImageViewer
         private int currentIndex;     // the index in List filenames of which image has been shown in the single windows
         //private int thumbnailIndex = 0; //the index in List bitmapImages of which image has been shown in the single windows
         private FileSystemWatcher fileWatcher;
+        private bool leftPage;
+        private bool rightPage;
         #endregion private var
 
         /// <summary>
@@ -44,6 +46,25 @@ namespace ImageViewer
         /// <summary>
         /// property binding to thumbnail windows
         /// </summary>
+        public bool LeftPage
+        {
+            get { return leftPage; }
+            set
+            {
+                leftPage = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("LeftPage"));
+            }
+        }
+
+        public bool RightPage
+        {
+            get { return rightPage; }
+            set
+            {
+                rightPage = value;
+                OnPropertyChanged(new PropertyChangedEventArgs("RightPage"));
+            }
+        }
         public ObservableCollection<BitmapImage> BitmapImages
         {
             get { return bitmapImages; }
@@ -68,6 +89,7 @@ namespace ImageViewer
                 GetImagesFileNames();
                 beginIndex = 0;
                 currentIndex = 0;
+                LeftPage = RightPage = false;
             }
             if (showMode == ShowMode.SingleWindow)
             {
@@ -124,7 +146,7 @@ namespace ImageViewer
                         img.DecodePixelHeight = 300;
                         img.UriSource = new Uri(fileNames[fileNames.Count - 1]);
                         img.EndInit();
-                        bitmapImages.Add(img);
+                        BitmapImages.Add(img);
                     }));
 
                 }
@@ -139,9 +161,9 @@ namespace ImageViewer
         public void LoadThumbnail()
         {
             bitmapImages.Clear();
-            if(showMode==ShowMode.SingleWindow && (currentIndex<beginIndex || currentIndex+1>endIndex))
+            if(showMode==ShowMode.SingleWindow && currentIndex!=beginIndex)
             {
-                beginIndex = currentIndex - 6 > 0 ? currentIndex - 6 : 0;
+                beginIndex = currentIndex;
                 endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
                 showMode = ShowMode.Thumbnail;
             }
@@ -154,11 +176,13 @@ namespace ImageViewer
                     img.UriSource = new Uri(fileNames[i]);
                     img.EndInit();
                     img.Freeze();
-                    bitmapImages.Add(img);
+                    BitmapImages.Add(img);
                 }
             });
             t.Start();
-           start = true;
+            start = true;
+            LeftPage = beginIndex > 0 ? true : false;
+            RightPage = endIndex < fileNames.Count ? true : false;
         }
        
         public void LoadNextThumbnail()
@@ -223,5 +247,35 @@ namespace ImageViewer
             }
             return image;
         }
-    }
+        //资源清理
+        private bool disposed = false;
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                Dispose(true);
+            }
+        }
+
+        //protected的Dispose方法，保证不会被外部调用。
+        //传入bool值disposing以确定是否释放托管资源
+        protected virtual void Dispose(bool disposing)
+        {
+            if(!disposed)
+            {
+                fileWatcher.Dispose();
+                image.Dispose();
+                disposed = true;
+                if (disposing)
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }
+          }
+
+        ~Images()
+        {
+            Dispose(false);
+        }
+      }
 }
