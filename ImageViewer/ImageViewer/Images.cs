@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace ImageViewer
 {
@@ -144,26 +145,20 @@ namespace ImageViewer
                 endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
                 showMode = ShowMode.Thumbnail;
             }
-            for (int i = beginIndex; i < endIndex; i++)
-            {
-                var img = new BitmapImage();
-                img.BeginInit();
-                img.DecodePixelHeight = 300;
-                img.UriSource = new Uri(fileNames[i]);
-                img.EndInit();
-                bitmapImages.Add(img);
-            }
-            //Parallel.For(beginIndex, endIndex, i =>
-            //  {
-            //      var img = new BitmapImage();
-            //      img.BeginInit();
-            //      img.DecodePixelHeight = 300;
-            //      img.UriSource = new Uri(fileNames[i]);
-            //      img.EndInit();
-            //      img.Freeze();
-            //      bitmapImages.Add(img);
-            //  });
-            start = true;
+            var t = new Thread(() => {
+                for (int i = beginIndex; i < endIndex; i++)
+                {
+                    var img = new BitmapImage();
+                    img.BeginInit();
+                    img.DecodePixelHeight = 300;
+                    img.UriSource = new Uri(fileNames[i]);
+                    img.EndInit();
+                    img.Freeze();
+                    bitmapImages.Add(img);
+                }
+            });
+            t.Start();
+           start = true;
         }
        
         public void LoadNextThumbnail()

@@ -15,9 +15,8 @@ namespace ImageViewer
         {
             InitializeComponent();
         }
-        public MainWindow(string fileName)
+        public MainWindow(string fileName):this()
         {
-            InitializeComponent();
             images = new Images(fileName, ShowMode.SingleWindow);
         }
         private void gridThumbnail_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -37,9 +36,10 @@ namespace ImageViewer
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                images = new ImageViewer.Images(fbd.SelectedPath,ShowMode.Thumbnail);
+                images = new Images(fbd.SelectedPath,ShowMode.Thumbnail);
                 images.LoadThumbnail();
                 gridThumbnail.DataContext = images;
+                openCanvs.Visibility = Visibility.Hidden;
             }
         }
 

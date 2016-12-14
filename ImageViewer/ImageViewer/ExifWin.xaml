@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageViewer"
         mc:Ignorable="d"
-        Title="ExifWin" Height="70.749" Width="483.704" HorizontalAlignment="Left" SizeToContent="WidthAndHeight" ShowInTaskbar="False" Opacity="0.4" Background="Black" WindowStyle="None" KeyDown="Window_KeyDown">
+        Title="ExifWin" Height="70.749" Width="483.704" 
+        HorizontalAlignment="Left" SizeToContent="WidthAndHeight" 
+        ShowInTaskbar="False" Opacity="0.4" Background="Black" 
+        WindowStyle="None" KeyDown="Window_KeyDown" WindowStartupLocation="CenterOwner">
     <Grid Margin="0" Background="Black">
         <Label Name="exifLabel" Margin="0" Background="Black" Foreground="White"></Label>
     </Grid>
