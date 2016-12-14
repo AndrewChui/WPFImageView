@@ -57,6 +57,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ExifWin.xaml.cs">
+      <DependentUpon>ExifWin.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SingleForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +67,10 @@
       <DependentUpon>SingleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Util.cs" />
+    <Page Include="ExifWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

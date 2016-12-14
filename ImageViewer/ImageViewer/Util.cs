@@ -128,7 +128,7 @@ namespace ImageViewer
                         property += "镜头 " + System.Text.ASCIIEncoding.ASCII.GetString(pt[i].Value, 0, pt[i].Value.Length - 1).Trim() + " ";
                         break;
                     case 0xA434:
-                        property += System.Text.ASCIIEncoding.ASCII.GetString(pt[i].Value, 0, pt[i].Value.Length - 1).Trim() + " ";
+                        property += "镜头 "+System.Text.ASCIIEncoding.ASCII.GetString(pt[i].Value, 0, pt[i].Value.Length - 1).Trim() + " ";
                         break;
                     case 0x112:
                         orientation = Convert.ToUInt16(pt[i].Value[1] << 8 | pt[i].Value[0]);
