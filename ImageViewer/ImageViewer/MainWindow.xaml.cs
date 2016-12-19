@@ -41,12 +41,10 @@ namespace ImageViewer
                 gridThumbnail.DataContext = images;
                 openCanvs.Visibility = Visibility.Hidden;
             }
-            var x = (openCanvs.ActualWidth - openButton.ActualWidth * 2) / 3;
+            var x = (openCanvs.ActualWidth - openButton.ActualWidth ) / 2;
             Canvas.SetLeft(openButton, x);
             var y = (openCanvs.ActualHeight - openButton.ActualHeight) / 2;
             Canvas.SetTop(openButton, y);
-            Canvas.SetLeft(exitButton, x * 2 + openButton.ActualWidth);
-            Canvas.SetTop(exitButton, y);
         }
 
         private void btnLeft_Click(object sender, RoutedEventArgs e)
@@ -71,11 +69,6 @@ namespace ImageViewer
             }
         }
 
-        private void exitButton_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Application.Current.Shutdown();
-        }
-
         private bool disposed = false;
         public void Dispose()
         {
@@ -91,7 +84,7 @@ namespace ImageViewer
         {
             if (!disposed)
             {
-                images.Dispose();
+                images?.Dispose();
                 disposed = true;
                 if (disposing)
                 {
@@ -102,6 +95,12 @@ namespace ImageViewer
         ~MainWindow()
         {
             Dispose(false);
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.MiddleButton == MouseButtonState.Pressed)
+                openCanvs.Visibility = Visibility.Visible;
         }
     }
 }

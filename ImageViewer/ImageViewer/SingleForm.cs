@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace ImageViewer
 {
@@ -18,17 +13,28 @@ namespace ImageViewer
         private bool mouseButtonDown;
         private Point lastMousePos;
         private Images images;
+        private ExifWin exifWin;
+        private void IinitExifWin()
+        {
+            exifWin = new ExifWin();
+            exifWin.ExifInfo = Util.GetProperty(currentImage);
+            exifWin.SetLabe();
+            exifWin.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+            exifWin.Left = 0;
+            exifWin.Top = 0;
+            InitializeComponent();
+        }
         public SingleForm(Images imgs,int index)
         {
-            InitializeComponent();
             images = imgs;
             currentImage = images.InitSingleImage(index);
+            IinitExifWin();
         }
         public SingleForm(Images imgs)
         {
-            InitializeComponent();
             images = imgs;
             currentImage = images.InitSingleImage();
+            IinitExifWin();
         }
         private void SingleForm_Load(object sender, EventArgs e)
         {
@@ -59,21 +65,27 @@ namespace ImageViewer
 
         private void SingleForm_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button==MouseButtons.Left && currentImage != null)
+            if(e.Button==MouseButtons.Middle)
             {
-                mouseButtonDown = true;
-                lastMousePos = e.Location;
-                Util.CalcShowRegion(currentImage, Size, e.Location, 1, ref formRect, out imageRect);
-                Invalidate();
-                return;
+                Close();
             }
-            if (e.Button == MouseButtons.Right && currentImage != null)
+            else
             {
-                mouseButtonDown = true;
-                lastMousePos = e.Location;
-                Util.CalcShowRegion(currentImage, Size, e.Location, 2, ref formRect, out imageRect);
-                Invalidate();
-                return;
+                System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.None;
+                if (e.Button == MouseButtons.Left && currentImage != null)
+                {
+                    mouseButtonDown = true;
+                    lastMousePos = e.Location;
+                    Util.CalcShowRegion(currentImage, Size, e.Location, 1, ref formRect, out imageRect);
+                    Invalidate();
+                }
+                if (e.Button == MouseButtons.Right && currentImage != null)
+                {
+                    mouseButtonDown = true;
+                    lastMousePos = e.Location;
+                    Util.CalcShowRegion(currentImage, Size, e.Location, 2, ref formRect, out imageRect);
+                    Invalidate();
+                }
             }
         }
 
@@ -82,13 +94,6 @@ namespace ImageViewer
             if (e.KeyCode == Keys.Escape)
             {
                 Close();
-            }
-            if(e.KeyCode==Keys.F10)
-            {
-                var exifWin = new ExifWin();
-                exifWin.ExifInfo = Util.GetProperty(currentImage);
-                exifWin.SetLabe();
-                exifWin.Show();
             }
         }
 
@@ -99,6 +104,7 @@ namespace ImageViewer
                 LoadFullImage();
                 mouseButtonDown = false;
             }
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
         }
 
         private void SingleForm_MouseMove(object sender, MouseEventArgs e)
@@ -122,10 +128,22 @@ namespace ImageViewer
                 Invalidate();
                 lastMousePos = e.Location;
             }
+            else
+            {
+                if(e.Y<20 && exifWin.Visibility==System.Windows.Visibility.Hidden && e.X<20)
+                {
+                    exifWin.Show();
+                }
+                else
+                {
+                    exifWin.Hide();
+                }
+            }
         }
 
         private void SingleForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            exifWin?.Close();
             images.LoadThumbnail();
         }
     }

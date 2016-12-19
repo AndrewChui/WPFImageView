@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ImageViewer"
         mc:Ignorable="d"
        Title="MainWindow" Height="950" Width="1200" Background="Black" 
-        KeyDown="Window_KeyDown" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
+        KeyDown="Window_KeyDown" MouseDown="Window_MouseDown" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
     <Grid Name="gridThumbnail">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -20,6 +20,24 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Path=ImagePath}" Foreground="White"
                    FontSize="18" Margin="20"></TextBlock>
+        <Button Grid.Row="0" Grid.Column="2" Name="openButtonS" Click="openButton_Click" >
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Image Name="btnbg" Source="/Images/open02.png"></Image>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source" Value="/Images/open01.png" TargetName="btnbg" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
         <Grid Grid.Row="1" Grid.Column="1"  Background="Black">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
@@ -116,14 +134,25 @@
                 </Style>
             </Button.Style>
         </Button>
-        <Canvas Name="openCanvs" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="Black">
-            <Button Name="openButton" FontSize="24" Click="openButton_Click"  Width="110">
-                Open
+        <Canvas Name="openCanvs" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Grid.RowSpan="3" Background="White">
+            <Button Name="openButton" FontSize="24" Click="openButton_Click" >
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Image Name="btnbg" Source="/Images/open02.png"></Image>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Source" Value="/Images/open01.png" TargetName="btnbg" />
+                                        </Trigger>
+                                   </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
             </Button>
-            <Button Name="exitButton" FontSize="24" Click="exitButton_Click"  Width="110">
-                Exit
-            </Button>
-        </Canvas>
+         </Canvas>
     </Grid>
-
 </Window>

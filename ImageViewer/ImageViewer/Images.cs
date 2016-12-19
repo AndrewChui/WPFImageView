@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Threading.Tasks;
 using System.Threading;
 
 namespace ImageViewer
@@ -109,7 +108,7 @@ namespace ImageViewer
             fileWatcher = new FileSystemWatcher(ImagePath, "*.jpg");
             fileWatcher.Created += new FileSystemEventHandler(OnCreate);
             //fileWatcher.Deleted += new FileSystemEventHandler(OnDelete);
-            //fileWatcher.Renamed += new RenamedEventHandler(OnRenamed);
+            fileWatcher.Renamed += new RenamedEventHandler(OnRenamed);
             fileWatcher.EnableRaisingEvents = true;
             fileWatcher.NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastAccess
             | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size;
@@ -117,7 +116,14 @@ namespace ImageViewer
             endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
             this.showMode = showMode;
         }
-              
+
+        private void OnRenamed(object sender, RenamedEventArgs e)
+        {
+            fileNames.Add(e.FullPath);
+            endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
+            LoadThumbnail();
+        }
+
         /// <summary>
         /// Construct
         /// </summary>
@@ -135,22 +141,8 @@ namespace ImageViewer
         private void OnCreate(object sender, FileSystemEventArgs e)
         {
             fileNames.Add(e.FullPath);
-            if (endIndex - beginIndex < 13)
-            {
-                endIndex++;
-                if (showMode == ShowMode.Thumbnail)
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                        var img = new BitmapImage();
-                        img.BeginInit();
-                        img.DecodePixelHeight = 300;
-                        img.UriSource = new Uri(fileNames[fileNames.Count - 1]);
-                        img.EndInit();
-                        BitmapImages.Add(img);
-                    }));
-
-                }
-            }
+            endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
+            LoadThumbnail();
         }
         public void GetImagesFileNames()
         {
@@ -161,30 +153,35 @@ namespace ImageViewer
         public void LoadThumbnail()
         {
             bitmapImages.Clear();
-            if(showMode==ShowMode.SingleWindow && currentIndex!=beginIndex)
+            if (showMode == ShowMode.SingleWindow && currentIndex != beginIndex)
             {
                 beginIndex = currentIndex;
                 endIndex = beginIndex + 13 <= fileNames.Count ? beginIndex + 13 : fileNames.Count;
                 showMode = ShowMode.Thumbnail;
             }
-            var t = new Thread(() => {
+            var t = new Thread(() =>
+            {
                 for (int i = beginIndex; i < endIndex; i++)
                 {
-                    var img = new BitmapImage();
-                    img.BeginInit();
-                    img.DecodePixelHeight = 300;
-                    img.UriSource = new Uri(fileNames[i]);
-                    img.EndInit();
-                    img.Freeze();
-                    BitmapImages.Add(img);
-                }
+                    try
+                    {
+                        var img = new BitmapImage();
+                        img.BeginInit();
+                        img.DecodePixelHeight = 300;
+                        img.UriSource = new Uri(fileNames[i]);
+                        img.EndInit();
+                        img.Freeze();
+                        BitmapImages.Add(img);
+                    }
+                    catch { }
+                  }
             });
             t.Start();
             start = true;
             LeftPage = beginIndex > 0 ? true : false;
             RightPage = endIndex < fileNames.Count ? true : false;
         }
-       
+
         public void LoadNextThumbnail()
         {
             if (!start || endIndex==fileNames.Count)
@@ -264,7 +261,7 @@ namespace ImageViewer
             if(!disposed)
             {
                 fileWatcher.Dispose();
-                image.Dispose();
+                image?.Dispose();
                 disposed = true;
                 if (disposing)
                 {
