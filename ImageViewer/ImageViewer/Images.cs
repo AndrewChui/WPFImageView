@@ -5,7 +5,6 @@ using System.IO;
 using System.ComponentModel;
 using System.Drawing;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Threading;
 
 namespace ImageViewer
